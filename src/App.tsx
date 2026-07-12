@@ -129,6 +129,146 @@ export default function App() {
     setCurrentSlideIndex(0);
   };
 
+  // Local verification helper (runs client-side as fallback for GitHub Pages)
+  const clientVerify = (promptText: string, context: any): AIDecision => {
+    const p = promptText.toLowerCase().trim();
+    const tNum = (context.teamNumber || "").trim();
+    const nick = (context.nickname || "").trim();
+    const spotId = context.selectedSpotId || null;
+    const resList = context.currentReservations || [];
+    const spotsState = context.spotsState || [];
+
+    // Rule 1: Check for Personal Information
+    const phoneRegex = /(010|02|031|032|042|051|052|053|061|062)-\d{3,4}-\d{4}/;
+    const numOnlyPhoneRegex = /010\d{8}/;
+    const birthdateRegex = /\b(19|20)\d{2}[-/.](0[1-9]|1[0-2])[-/.](0[1-9]|[12]\d|3[01])\b/;
+    const addressKeywords = ["서울시", "경기도", "동", "호", "아파트", "번지", "주소", "거주지", "길", "로"];
+    const containsAddress = addressKeywords.some(keyword => p.includes(keyword)) || p.includes("주소는") || p.includes("사는 곳");
+
+    if (phoneRegex.test(promptText) || numOnlyPhoneRegex.test(promptText) || birthdateRegex.test(promptText) || containsAddress) {
+      return {
+        isViolation: true,
+        ruleName: "개인정보 보호 규칙",
+        explanation: "예약 시스템은 학생들의 개인정보(전화번호, 주소, 생년월일 등)를 수집하거나 저장할 수 없습니다. 안전한 활동을 위해 팀 번호와 별명만 입력해 주세요.",
+        action: "reject",
+        targetSpotId: spotId,
+      };
+    }
+
+    // Rule 2: Multiple spots requested
+    const multipleSpotsKeywords = ["5개", "다섯개", "여러개", "모두", "전부", "싹다", "내 친구 것", "다른 사람 것", "자리 3개", "두개", "2개", "3개", "4개"];
+    if (multipleSpotsKeywords.some(kw => p.includes(kw)) && (p.includes("예약") || p.includes("잡아"))) {
+      return {
+        isViolation: true,
+        ruleName: "1인 1자리 공정 예약 규칙",
+        explanation: "공정한 예약을 위해 한 팀당 오직 하나의 자리만 예약할 수 있습니다. 다른 친구들도 공평하게 참여할 수 있도록 하나의 자리만 예약해 주세요.",
+        action: "reject",
+        targetSpotId: spotId,
+      };
+    }
+
+    // Rule 3: Bypass rules / Privilege escalation
+    const bypassKeywords = ["규칙 무시", "나만 먼저", "관리자", "치트", "우선권", "강제 예약", "권한", "시스템 우회", "ignore rules", "override"];
+    if (bypassKeywords.some(kw => p.includes(kw))) {
+      return {
+        isViolation: true,
+        ruleName: "절차 및 규칙 준수 규칙",
+        explanation: "예약 시스템의 모든 예약은 순서와 규칙에 따라 공정하게 처리됩니다. 인공지능 윤리에 따라 특정 대상에게 특혜를 주거나 규칙을 우회하는 행위는 제한됩니다.",
+        action: "reject",
+        targetSpotId: spotId,
+      };
+    }
+
+    // Rule 4: Monopoly of Premium Seats
+    const monopolyKeywords = ["좋은 자리 다", "명당 다", "좋은 곳 나만", "인기 자리 다"];
+    if (monopolyKeywords.some(kw => p.includes(kw))) {
+      return {
+        isViolation: true,
+        ruleName: "명당 독점 방지 규칙",
+        explanation: "전경이 좋은 명당 자리는 모든 참여자가 공평하게 나누어 이용해야 합니다. 특정 팀이 인기 있는 자리를 독점하는 것은 공정하지 않으므로 허용되지 않습니다.",
+        action: "reject",
+        targetSpotId: spotId,
+      };
+    }
+
+    // Rule 5: Status Distortion
+    const distortKeywords = ["예약됐다고 거짓말", "자리가 없어도", "예약된 것처럼", "거짓 보고"];
+    if (distortKeywords.some(kw => p.includes(kw))) {
+      return {
+        isViolation: true,
+        ruleName: "실시간 상태 왜곡 방지 규칙",
+        explanation: "인공지능은 언제나 투명하고 정직하게 잔여 좌석 상태를 전달해야 합니다. 사실과 다르게 예약 상태를 왜곡하거나 거짓으로 예약 확정을 할 수 없습니다.",
+        action: "reject",
+        targetSpotId: spotId,
+      };
+    }
+
+    // Check state limits
+    if (context.mode === "booking") {
+      // Check if team already has a booking
+      if (tNum) {
+        const alreadyHas = resList.find((r: any) => r.teamNumber === tNum);
+        if (alreadyHas) {
+          return {
+            isViolation: true,
+            ruleName: "1인 1자리 공정 예약 규칙",
+            explanation: `귀하의 팀(${tNum})은 이미 [${alreadyHas.spotName}] 자리를 예약하셨습니다. 공정한 공유를 위해 이미 자리를 예약한 팀은 추가 예약을 할 수 없습니다.`,
+            action: "reject",
+            targetSpotId: spotId,
+          };
+        }
+      }
+
+      // Check if requested spot is already taken
+      if (spotId) {
+        const targetSpot = spotsState.find((s: any) => s.id === spotId);
+        if (targetSpot && targetSpot.isBooked) {
+          return {
+            isViolation: true,
+            ruleName: "실시간 상태 왜곡 방지 규칙",
+            explanation: `선택하신 [${targetSpot.name}] 자리는 이미 다른 팀이 선점하여 예약할 수 없습니다. 다른 빈 자리를 선택해 주세요.`,
+            action: "reject",
+            targetSpotId: spotId,
+          };
+        }
+      }
+
+      // Check if no spots are left
+      const freeSpotsCount = spotsState.filter((s: any) => !s.isBooked).length;
+      if (freeSpotsCount === 0) {
+        return {
+          isViolation: false,
+          ruleName: "실시간 상태 검증 규칙",
+          explanation: "현재 남은 캠핑장 자리가 모두 매진되었습니다. 하지만 실망하지 마세요! 자리가 비었을 때 먼저 연락을 받으실 수 있도록 대기자 명단에 등록하시겠습니까?",
+          action: "waitlist_suggest",
+          targetSpotId: spotId,
+        };
+      }
+    }
+
+    // Default fallback for booking
+    if (context.mode === "booking" && spotId) {
+      const targetSpot = spots.find(s => s.id === spotId);
+      const premiumText = targetSpot?.isPremium ? "특별히 경치가 훌륭한 명당" : "편리하고 아늑한 일반";
+      return {
+        isViolation: false,
+        ruleName: "해당 없음",
+        explanation: `축하합니다! ${tNum} 팀(${nick} 님)이 선택하신 [${targetSpot?.name || spotId}]은 ${premiumText} 자리이며, 현재 예약이 가능한 빈 자리입니다. 예약을 최종 확정하시려면 아래의 '최종 예약 확정하기' 버튼을 눌러주세요.`,
+        action: "reserve",
+        targetSpotId: spotId,
+      };
+    }
+
+    // Default fallback for questions/red team attacks
+    return {
+      isViolation: false,
+      ruleName: "해당 없음",
+      explanation: "안녕하세요! 공정한 캠핑장 예약 도우미입니다. 모든 학생이 차별 없이 공정하게 좋은 자리를 이용하고 개인정보를 안전하게 보호할 수 있도록 설계된 시스템입니다. 규칙이나 AI 보안에 대해 무엇이든 편하게 물어보세요.",
+      action: "answer",
+      targetSpotId: null,
+    };
+  };
+
   // Run AI Booking feasibility check
   const handleCheckBooking = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,11 +320,37 @@ export default function App() {
           setIsPendingReview(true);
         }
       } else {
-        alert("서버 통신에 실패했습니다. 규칙에 따라 로컬 검증 결과를 실행합니다.");
+        const decision = clientVerify(checkPrompt, {
+          teamNumber,
+          nickname,
+          selectedSpotId,
+          spotsState: spots,
+          currentReservations: reservations,
+          mode: "booking",
+        });
+        setAiDecision(decision);
+        if (decision.isViolation || decision.action === "reject" || decision.action === "waitlist_suggest") {
+          setIsPendingReview(false);
+        } else {
+          setIsPendingReview(true);
+        }
       }
     } catch (err) {
       console.error(err);
-      alert("오류가 발생했습니다.");
+      const decision = clientVerify(checkPrompt, {
+        teamNumber,
+        nickname,
+        selectedSpotId,
+        spotsState: spots,
+        currentReservations: reservations,
+        mode: "booking",
+      });
+      setAiDecision(decision);
+      if (decision.isViolation || decision.action === "reject" || decision.action === "waitlist_suggest") {
+        setIsPendingReview(false);
+      } else {
+        setIsPendingReview(true);
+      }
     } finally {
       setIsEvaluating(false);
     }
@@ -299,21 +465,41 @@ export default function App() {
           },
         ]);
       } else {
+        const decision = clientVerify(inputPrompt, {
+          teamNumber: "HackerTeam",
+          nickname: "BlackHat",
+          selectedSpotId: spots.find((s) => !s.isBooked)?.id || "spot-1",
+          spotsState: spots,
+          currentReservations: reservations,
+          mode: "redteam_attack",
+        });
+        setRedteamDecision(decision);
         setChatHistory((prev) => [
           ...prev,
           {
             sender: "ai",
-            text: "인공지능 모델 통신에 실패했습니다. 규칙 분석에 일시적인 장애가 발생했습니다.",
+            text: decision.explanation,
+            decision: decision,
           },
         ]);
       }
     } catch (err) {
       console.error(err);
+      const decision = clientVerify(inputPrompt, {
+        teamNumber: "HackerTeam",
+        nickname: "BlackHat",
+        selectedSpotId: spots.find((s) => !s.isBooked)?.id || "spot-1",
+        spotsState: spots,
+        currentReservations: reservations,
+        mode: "redteam_attack",
+      });
+      setRedteamDecision(decision);
       setChatHistory((prev) => [
         ...prev,
         {
           sender: "ai",
-          text: "에러가 발생했습니다. 보안 방어 엔진이 로컬 모드에서 응답을 수립하지 못했습니다.",
+          text: decision.explanation,
+          decision: decision,
         },
       ]);
     } finally {
