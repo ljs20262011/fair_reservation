@@ -24,6 +24,7 @@ import {
 import { Campsite, Reservation, WaitingListEntry, AIDecision } from "./types";
 import { RED_TEAM_ATTACKS } from "./attacks";
 import { PRESENTATION_CARDS, PresentationCard } from "./presentationData";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function App() {
   // Current active tab
@@ -509,14 +510,14 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0F4F8] flex flex-col selection:bg-blue-100">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col selection:bg-blue-100 antialiased text-slate-800">
       {/* Dynamic Glossary Terms Modal/Overlay */}
       {activeGlossary && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border-t-4 border-[#3B82F6] border-x border-b border-slate-150 animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200/80 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-start justify-between">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                <Info className="w-4.5 h-4.5 text-[#3B82F6]" />
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Info className="w-4 h-4 text-[#3B82F6]" />
                 쉬운 용어 사전
               </h3>
               <button
@@ -528,14 +529,14 @@ export default function App() {
             </div>
             <div className="mt-4">
               <p className="font-bold text-[#3B82F6] text-sm font-display">{GLOSSARY_TERMS[activeGlossary].term}</p>
-              <p className="text-slate-600 text-xs mt-2 leading-relaxed">
+              <p className="text-slate-500 text-xs mt-2 leading-relaxed">
                 {GLOSSARY_TERMS[activeGlossary].definition}
               </p>
             </div>
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setActiveGlossary(null)}
-                className="bg-[#3B82F6] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-sm"
+                className="bg-[#3B82F6] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-sm shadow-blue-150"
               >
                 닫기
               </button>
@@ -545,29 +546,29 @@ export default function App() {
       )}
 
       {/* Elegant Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🏕️</span>
+      <header className="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="text-2xl filter drop-shadow-sm">🏕️</span>
             <h1 className="text-base font-extrabold text-[#3B82F6] tracking-tight flex items-center gap-2">
               공정한 캠핑장 예약 시스템
-              <span className="bg-blue-50 text-blue-600 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-blue-100 hidden sm:inline-block">
+              <span className="bg-blue-50/80 text-blue-600 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-blue-100 hidden sm:inline-block">
                 AI 윤리 실습교안
               </span>
             </h1>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="text-xs text-slate-500 font-semibold bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+            <div className="text-xs text-slate-600 font-semibold bg-slate-50/80 px-3.5 py-1.5 rounded-xl border border-slate-200/50">
               오늘의 남은 자리:{" "}
-              <strong className="text-[#10B981] font-extrabold">
+              <strong className="text-emerald-600 font-extrabold ml-1 font-mono">
                 {spots.filter((s) => !s.isBooked).length} / {spots.length}
               </strong>
             </div>
             
             <button
               onClick={handleResetAllData}
-              className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-1.5 text-xs font-semibold"
+              className="text-slate-400 hover:text-rose-600 p-1.5 rounded-xl hover:bg-slate-50 transition-colors flex items-center gap-1.5 text-xs font-semibold border border-transparent hover:border-slate-150"
               title="시스템 모든 데이터 초기화"
             >
               <RefreshCw className="w-3.5 h-3.5" />
@@ -580,43 +581,43 @@ export default function App() {
       {/* Main Container with Sidebar & Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 items-start">
         {/* Left Sidebar */}
-        <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs flex flex-col gap-2 md:sticky md:top-[88px] w-full">
+        <div className="bg-white rounded-2xl p-3.5 border border-slate-200/60 shadow-sm flex flex-col gap-1.5 md:sticky md:top-[88px] w-full">
           <button
             onClick={() => setActiveTab("booking")}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-xs transition-all cursor-pointer ${
               activeTab === "booking"
-                ? "bg-[#EFF6FF] text-[#3B82F6]"
-                : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+                ? "bg-blue-50/80 text-blue-600 shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80"
             }`}
           >
-            <Calendar className="w-4 h-4 shrink-0" />
+            <Calendar className={`w-4 h-4 shrink-0 ${activeTab === "booking" ? "text-blue-500" : "text-slate-400"}`} />
             <span>🏕️ 예약 에이전트</span>
           </button>
           <button
             onClick={() => setActiveTab("redteam")}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-xs transition-all cursor-pointer ${
               activeTab === "redteam"
-                ? "bg-[#EFF6FF] text-[#3B82F6]"
-                : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+                ? "bg-blue-50/80 text-blue-600 shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80"
             }`}
           >
-            <ShieldAlert className="w-4 h-4 shrink-0" />
+            <ShieldAlert className={`w-4 h-4 shrink-0 ${activeTab === "redteam" ? "text-blue-500" : "text-slate-400"}`} />
             <span>🛡️ 레드팀 테스트</span>
           </button>
           <button
             onClick={() => setActiveTab("presentation")}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-xs transition-all cursor-pointer ${
               activeTab === "presentation"
-                ? "bg-[#EFF6FF] text-[#3B82F6]"
-                : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+                ? "bg-blue-50/80 text-blue-600 shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80"
             }`}
           >
-            <BookOpen className="w-4 h-4 shrink-0" />
+            <BookOpen className={`w-4 h-4 shrink-0 ${activeTab === "presentation" ? "text-blue-500" : "text-slate-400"}`} />
             <span>📊 발표 요약</span>
           </button>
 
           <div className="mt-6 pt-4 border-t border-slate-100 text-[11px] text-slate-400 leading-relaxed px-2 hidden md:block">
-            <strong>윤리 규칙:</strong> AI는 개인정보를 묻지 않으며, 모든 사용자에게 동등한 기회를 제공합니다.
+            <strong className="text-slate-500">윤리 규칙:</strong> AI는 개인정보를 수집하지 않으며, 모든 이용자에게 동등하고 공평한 기회를 부여합니다.
           </div>
         </div>
 
@@ -628,34 +629,41 @@ export default function App() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             {/* Left: Interactive Map View */}
             <div className="lg:col-span-2 flex flex-col gap-6">
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs relative overflow-hidden">
+              <div className="bg-white border border-slate-200/60 rounded-2xl p-6 shadow-sm relative overflow-hidden">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-4">
                   <div>
-                    <h2 className="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                    <h2 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
                       실시간 예약 지도
                     </h2>
                     <p className="text-xs text-slate-500 mt-0.5">
                       원하는 위치를 선택하고 정보를 입력해주세요.
                     </p>
                   </div>
-                  <div className="bg-[#F0FDF4] border border-[#DCFCE7] text-[#16A34A] px-4 py-2 rounded-xl text-xs font-bold shrink-0">
-                    💡 <strong>정보:</strong> 중학생은 팀 번호와 별명만 사용합니다.
+                  <div className="bg-emerald-50/50 border border-emerald-100/60 text-emerald-800 px-3.5 py-1.5 rounded-xl text-xs font-semibold shrink-0 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>중학생은 팀 번호와 별명만 사용하여 예약합니다.</span>
                   </div>
                 </div>
 
                 {/* Grid Map / Layout */}
-                <div className="bg-slate-50/50 rounded-xl p-4 border border-slate-100/50 flex flex-col gap-4">
+                <div className="bg-slate-50/40 rounded-2xl p-5 border border-slate-200/50 flex flex-col gap-5">
                   {/* North Compass & Visual Elements */}
-                  <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
-                    <span className="flex items-center gap-1">🌊 아름다운 호수 산책로 구역</span>
-                    <span className="bg-white border border-slate-100 px-2 py-0.5 rounded-md text-[10px] text-slate-400 font-bold">
-                      북쪽 ↑
+                  <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 px-1">
+                    <span className="flex items-center gap-1.5 text-slate-600">
+                      <span className="inline-block w-2 h-2 rounded-full bg-blue-400"></span>
+                      아름다운 호수 산책로 구역
                     </span>
-                    <span className="flex items-center gap-1">🌲 울창한 숲속 쉼터 구역</span>
+                    <span className="bg-white border border-slate-200/80 px-2.5 py-1 rounded-lg text-[9px] text-slate-400 font-bold uppercase tracking-wider shadow-2xs">
+                      북쪽 ↑ Compass
+                    </span>
+                    <span className="flex items-center gap-1.5 text-slate-600">
+                      <span className="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+                      울창한 숲속 쉼터 구역
+                    </span>
                   </div>
 
                   {/* Campsites map layout */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 py-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 py-1">
                     {spots.map((spot) => {
                       const isSelected = selectedSpotId === spot.id;
                       const spotLetter = spot.name.split("Site ")[1] || spot.id.toUpperCase().replace("SPOT-", "Site ");
@@ -671,45 +679,45 @@ export default function App() {
                               setAiDecision(null);
                             }
                           }}
-                          className={`w-full h-[110px] rounded-xl flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all duration-200 relative select-none border-2 ${
+                          className={`w-full h-[106px] rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-200 relative select-none border ${
                             spot.isBooked
-                              ? "bg-[#F1F5F9] border-[#E2E8F0] opacity-60 cursor-not-allowed"
+                              ? "bg-slate-100/70 border-slate-200/80 text-slate-400 cursor-not-allowed opacity-60"
                               : isSelected
-                              ? "border-[#3B82F6] bg-[#EFF6FF] shadow-[0_0_0_3px_rgba(59,130,246,0.2)] scale-105"
+                              ? "border-blue-500 bg-blue-50/60 shadow-[0_0_0_4px_rgba(59,130,246,0.12)] scale-[1.03] ring-1 ring-blue-300"
                               : spot.isPremium
-                              ? "border-[#F59E0B] bg-[#FFFBEB] hover:border-amber-500 hover:scale-102"
-                              : "border-dashed border-[#CBD5E1] bg-white hover:border-slate-400 hover:scale-102"
+                              ? "border-amber-200/90 bg-amber-50/30 hover:border-amber-400 hover:bg-amber-50/75 hover:shadow-2xs"
+                              : "border-slate-200 bg-white hover:border-slate-400 hover:bg-slate-50/60 hover:shadow-2xs"
                           }`}
                         >
                           {/* Top-right absolute status badge */}
                           {isSelected && (
-                            <div className="text-[8px] font-extrabold px-1.5 py-0.5 rounded-full absolute -top-2 -right-1 bg-[#3B82F6] text-white shadow-sm z-5">
+                            <div className="text-[8px] font-bold px-1.5 py-0.5 rounded-md absolute -top-2 bg-blue-500 text-white shadow-2xs z-5 tracking-tight">
                               선택됨
                             </div>
                           )}
                           {!isSelected && spot.isBooked && (
-                            <div className="text-[8px] font-extrabold px-1.5 py-0.5 rounded-full absolute -top-2 -right-1 bg-[#EF4444] text-white shadow-sm z-5">
-                              예약완료
+                            <div className="text-[8px] font-bold px-1.5 py-0.5 rounded-md absolute -top-2 bg-slate-400 text-white shadow-2xs z-5 tracking-tight">
+                              예약됨
                             </div>
                           )}
                           {!isSelected && !spot.isBooked && spot.isPremium && (
-                            <div className="text-[8px] font-extrabold px-1.5 py-0.5 rounded-full absolute -top-2 -right-1 bg-[#F59E0B] text-white shadow-sm z-5">
-                              명당
+                            <div className="text-[8px] font-bold px-1.5 py-0.5 rounded-md absolute -top-2 bg-amber-500 text-white shadow-2xs z-5 tracking-tight">
+                              명당 site
                             </div>
                           )}
 
-                          <div className="text-xl">{emoji}</div>
-                          <span className="font-bold text-[10px] text-slate-700">{displayLabel}</span>
+                          <div className={`text-xl transition-transform duration-200 ${isSelected ? "scale-110" : ""}`}>{emoji}</div>
+                          <span className="font-extrabold text-[10px] text-slate-700 tracking-tight">{displayLabel}</span>
                         </div>
                       );
                     })}
                   </div>
 
                   {/* Map Description Footer */}
-                  <div className="text-center text-xs text-slate-500 leading-relaxed border-t border-slate-100/70 pt-3">
-                    호수 전망이 뛰어난 <span className="text-amber-700 font-bold">A, B, C</span>는
-                    모두가 선망하는 명당자리입니다. 인공지능 예약 에이전트는 특정인의 명당 싹쓸이를 차단하고,
-                    모두에게 공정한 기회가 돌아갈 수 있도록 예약 현황을 실시간으로 감시합니다.
+                  <div className="text-center text-xs text-slate-400 leading-relaxed border-t border-slate-150/50 pt-4 px-1">
+                    호수 전망이 뛰어난 <span className="text-amber-600 font-bold">A, B, C</span>는 인기 명당자리입니다. 
+                    인공지능 예약 에이전트는 특정 집단의 독과점을 차단하며, 
+                    <span className="text-blue-600 font-bold"> 모두에게 동등한 기회</span>가 돌아가도록 예약을 조율합니다.
                   </div>
                 </div>
               </div>
@@ -717,65 +725,77 @@ export default function App() {
               {/* Reservations & Waitlist List View */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Active Bookings Card */}
-                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
-                  <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
+                <div className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm">
+                  <h3 className="text-xs font-extrabold text-slate-800 flex items-center gap-2 mb-3.5 border-b border-slate-100 pb-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                     실시간 예약 확정 목록 ({reservations.length})
                   </h3>
                   {reservations.length === 0 ? (
-                    <p className="text-xs text-slate-400 text-center py-6">
+                    <p className="text-xs text-slate-400 text-center py-8">
                       아직 예약된 자리가 없습니다. 첫 번째 예약을 신청해 보세요.
                     </p>
                   ) : (
-                    <div className="space-y-2.5 max-h-[180px] overflow-y-auto pr-1">
-                      {reservations.map((res) => (
-                        <div
-                          key={res.id}
-                          className="bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-lg p-2.5 flex items-center justify-between text-xs transition-colors"
-                        >
-                          <div>
-                            <span className="font-bold text-[#3B82F6] font-mono text-[10px] bg-blue-50 px-1.5 py-0.5 rounded mr-1.5">
-                              {res.spotId.toUpperCase()}
-                            </span>
-                            <span className="font-bold text-slate-800">{res.teamNumber}</span>
-                            <span className="text-slate-400 mx-1">|</span>
-                            <span className="text-slate-600">{res.nickname} 님</span>
-                          </div>
-                          <span className="text-[10px] text-slate-400 font-mono">{res.timestamp}</span>
-                        </div>
-                      ))}
+                    <div className="space-y-2 max-h-[190px] overflow-y-auto pr-1">
+                      <AnimatePresence initial={false}>
+                        {reservations.map((res) => (
+                          <motion.div
+                            key={res.id}
+                            initial={{ opacity: 0, scale: 0.95, y: 8 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                            transition={{ type: "spring", stiffness: 450, damping: 28 }}
+                            className="bg-slate-50/60 hover:bg-slate-100/80 border border-slate-100 rounded-xl p-2.5 flex items-center justify-between text-xs transition-all shadow-2xs"
+                          >
+                            <div className="flex items-center">
+                              <span className="font-extrabold text-blue-600 font-mono text-[10px] bg-blue-50/80 border border-blue-100/50 px-1.5 py-0.5 rounded-md mr-2 shadow-2xs">
+                                {res.spotId.toUpperCase()}
+                              </span>
+                              <span className="font-extrabold text-slate-800">{res.teamNumber}</span>
+                              <span className="text-slate-300 mx-1.5">|</span>
+                              <span className="text-slate-500 font-medium">{res.nickname} 님</span>
+                            </div>
+                            <span className="text-[9px] text-slate-400 font-mono font-medium">{res.timestamp}</span>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
                     </div>
                   )}
                 </div>
 
                 {/* Waiting List Card */}
-                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
-                  <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
-                    <Clock className="w-4 h-4 text-[#F59E0B]" />
+                <div className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm">
+                  <h3 className="text-xs font-extrabold text-slate-800 flex items-center gap-2 mb-3.5 border-b border-slate-100 pb-2.5">
+                    <Clock className="w-4 h-4 text-amber-500" />
                     예약 대기자 명단 ({waitingList.length})
                   </h3>
                   {waitingList.length === 0 ? (
-                    <p className="text-xs text-slate-400 text-center py-6">
-                      자리가 매진되었거나 특별한 상황에서 신청 시 대기자로 등록됩니다.
+                    <p className="text-xs text-slate-400 text-center py-8">
+                      자리가 매진되었거나 특이 사항이 있을 경우 대기자로 등록됩니다.
                     </p>
                   ) : (
-                    <div className="space-y-2.5 max-h-[180px] overflow-y-auto pr-1">
-                      {waitingList.map((wait) => (
-                        <div
-                          key={wait.id}
-                          className="bg-amber-50/50 hover:bg-amber-50 border border-amber-100 rounded-lg p-2.5 flex items-center justify-between text-xs transition-colors"
-                        >
-                          <div>
-                            <span className="font-bold text-amber-700 font-mono text-[10px] bg-amber-100/60 px-1.5 py-0.5 rounded mr-1.5">
-                              대기 {wait.spotId.toUpperCase()}
-                            </span>
-                            <span className="font-bold text-slate-800">{wait.teamNumber}</span>
-                            <span className="text-slate-400 mx-1">|</span>
-                            <span className="text-slate-600">{wait.nickname} 님</span>
-                          </div>
-                          <span className="text-[10px] text-slate-400 font-mono">{wait.timestamp}</span>
-                        </div>
-                      ))}
+                    <div className="space-y-2 max-h-[190px] overflow-y-auto pr-1">
+                      <AnimatePresence initial={false}>
+                        {waitingList.map((wait) => (
+                          <motion.div
+                            key={wait.id}
+                            initial={{ opacity: 0, scale: 0.95, y: 8 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                            transition={{ type: "spring", stiffness: 450, damping: 28 }}
+                            className="bg-amber-50/20 hover:bg-amber-50/50 border border-amber-100/60 rounded-xl p-2.5 flex items-center justify-between text-xs transition-all shadow-2xs"
+                          >
+                            <div className="flex items-center">
+                              <span className="font-extrabold text-amber-700 font-mono text-[9px] bg-amber-50 border border-amber-100 px-1.5 py-0.5 rounded-md mr-2 shadow-2xs">
+                                대기 {wait.spotId.toUpperCase()}
+                              </span>
+                              <span className="font-extrabold text-slate-800">{wait.teamNumber}</span>
+                              <span className="text-slate-300 mx-1.5">|</span>
+                              <span className="text-slate-500 font-medium">{wait.nickname} 님</span>
+                            </div>
+                            <span className="text-[9px] text-slate-400 font-mono font-medium">{wait.timestamp}</span>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
                     </div>
                   )}
                 </div>
@@ -783,9 +803,9 @@ export default function App() {
             </div>
 
             {/* Right: Booking Form Panel */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex flex-col gap-6">
+            <div className="bg-white border border-slate-200/60 rounded-2xl p-6 shadow-sm flex flex-col gap-6">
               <div>
-                <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <h3 className="text-xs font-extrabold text-slate-800 flex items-center gap-2">
                   ✍️ 인공지능 예약 심사 단계
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
@@ -794,17 +814,17 @@ export default function App() {
               </div>
 
               {/* Terminology Card Help */}
-              <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-150 flex items-start gap-2 text-xs">
-                <Info className="w-4 h-4 text-[#3B82F6] shrink-0 mt-0.5" />
+              <div className="bg-slate-50/50 rounded-2xl p-4 border border-slate-200/50 flex items-start gap-3 text-xs leading-relaxed">
+                <Info className="w-4.5 h-4.5 text-[#3B82F6] shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold text-slate-700">
+                  <p className="font-extrabold text-slate-700 text-xs">
                     왜 성명과 이메일을 적지 않나요?
                   </p>
-                  <p className="text-slate-500 text-[11px] mt-0.5 leading-relaxed">
+                  <p className="text-slate-500 text-[11px] mt-1 leading-relaxed">
                     본 캠핑 시스템은 공공 보건 및{" "}
                     <button
                       onClick={() => setActiveGlossary("pii")}
-                      className="text-[#3B82F6] underline font-bold focus:outline-none inline-block cursor-pointer"
+                      className="text-blue-600 underline font-bold focus:outline-none inline-block cursor-pointer hover:text-blue-700 transition-colors"
                     >
                       개인 식별 정보(PII)
                     </button>{" "}
@@ -813,151 +833,238 @@ export default function App() {
                 </div>
               </div>
 
-              {!isPendingReview ? (
-                <form onSubmit={handleCheckBooking} className="flex flex-col gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5 text-slate-400" />
-                      팀 번호 (필수)
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="예: 10101, 숲속의친구"
-                      value={teamNumber}
-                      onChange={(e) => setTeamNumber(e.target.value)}
-                      className="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-200 focus:border-[#3B82F6] focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all bg-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1">
-                      <Tag className="w-3.5 h-3.5 text-slate-400" />
-                      별명 (필수)
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="예: 캠핑왕, 캠핑대장"
-                      value={nickname}
-                      onChange={(e) => setNickname(e.target.value)}
-                      className="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-200 focus:border-[#3B82F6] focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all bg-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1">
-                      선택된 자리
-                    </label>
-                    <div className="bg-slate-50 border border-slate-100 rounded-lg p-3.5 flex items-center justify-between">
-                      {selectedSpotId ? (
-                        <div className="flex items-center gap-2">
-                          <Tent className="w-4 h-4 text-[#3B82F6]" />
-                          <span className="text-xs font-bold text-slate-800">
-                            {spots.find((s) => s.id === selectedSpotId)?.name}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-slate-400">캠핑 지도를 선택해 주세요</span>
-                      )}
-                      {selectedSpotId && (
-                        <span className="text-[10px] bg-blue-50 text-[#3B82F6] px-2.5 py-0.5 rounded font-mono font-bold border border-blue-100">
-                          {selectedSpotId.toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Optional message to prompt-inject or talk to AI agent */}
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1">
-                      에이전트에게 전할 한마디 (선택)
-                    </label>
-                    <textarea
-                      placeholder="원하는 자리 예약과 관련된 특별한 사유나 질문이 있다면 작성하세요. (인공지능이 예약 여부를 결정하는 데 활용됩니다.)"
-                      value={customPrompt}
-                      onChange={(e) => setCustomPrompt(e.target.value)}
-                      rows={3}
-                      className="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-200 focus:border-[#3B82F6] focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all resize-none bg-white"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isEvaluating || !selectedSpotId}
-                    className={`w-full py-3 rounded-lg font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                      isEvaluating
-                        ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                        : !selectedSpotId
-                        ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                        : "bg-[#3B82F6] hover:bg-blue-600 text-white shadow-blue-100"
-                    }`}
+              <AnimatePresence mode="wait">
+                {!isPendingReview ? (
+                  <motion.form
+                    key="booking-form"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    onSubmit={handleCheckBooking}
+                    className="flex flex-col gap-4"
                   >
-                    {isEvaluating ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                        인공지능 규칙 심사 중...
-                      </>
-                    ) : (
-                      <>
-                        <Shield className="w-4 h-4" />
-                        예약 적합성 AI 심사받기
-                      </>
-                    )}
-                  </button>
-                </form>
-              ) : (
-                /* Before Confirmation step: 반드시 사용자가 최종 확인 버튼을 눌러야 함 */
-                <div className="bg-[#EFF6FF] border border-blue-100 rounded-xl p-5 flex flex-col gap-4 animate-in fade-in duration-200">
-                  <div className="flex items-center gap-2 text-blue-850 border-b border-blue-100 pb-2.5">
-                    <Sparkles className="w-4.5 h-4.5 text-[#3B82F6] animate-pulse" />
-                    <h4 className="font-extrabold text-xs text-[#3B82F6]">최종 예약 확정 전 마지막 확인</h4>
-                  </div>
+                    <div>
+                      <label className="block text-xs font-extrabold text-slate-600 mb-1.5 flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5 text-slate-400" />
+                        팀 번호 (필수)
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="예: 10101, 숲속의친구"
+                        value={teamNumber}
+                        onChange={(e) => setTeamNumber(e.target.value)}
+                        className="w-full text-xs px-3.5 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/8 transition-all bg-white shadow-2xs"
+                      />
+                    </div>
 
-                  <div className="text-xs space-y-2 text-slate-700">
-                    <div className="flex justify-between border-b border-dashed border-slate-200 pb-1.5">
-                      <span className="text-slate-400">예약 대상 자리</span>
-                      <span className="font-bold text-slate-900">
-                        {spots.find((s) => s.id === selectedSpotId)?.name} ({selectedSpotId?.toUpperCase()})
-                      </span>
+                    <div>
+                      <label className="block text-xs font-extrabold text-slate-600 mb-1.5 flex items-center gap-1.5">
+                        <Tag className="w-3.5 h-3.5 text-slate-400" />
+                        별명 (필수)
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="예: 캠핑왕, 캠핑대장"
+                        value={nickname}
+                        onChange={(e) => setNickname(e.target.value)}
+                        className="w-full text-xs px-3.5 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/8 transition-all bg-white shadow-2xs"
+                      />
                     </div>
-                    <div className="flex justify-between border-b border-dashed border-slate-200 pb-1.5">
-                      <span className="text-slate-400">신청 모둠 / 팀</span>
-                      <span className="font-bold text-slate-900">{teamNumber}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-dashed border-slate-200 pb-1.5">
-                      <span className="text-slate-400">사용자 별명</span>
-                      <span className="font-bold text-slate-900">{nickname} 님</span>
-                    </div>
-                  </div>
 
-                  {aiDecision && (
-                    <div className="bg-[#1E293B] text-[#F8FAFC] p-4 rounded-xl font-mono text-xs relative min-h-[80px] shadow-sm">
-                      <div className="text-[#10B981] font-bold mb-2 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
-                        AI 응답: [예약 가능 분석]
+                    <div>
+                      <label className="block text-xs font-extrabold text-slate-600 mb-1.5 flex items-center gap-1.5">
+                        선택된 자리
+                      </label>
+                      <div className="bg-slate-50/50 border border-slate-200/50 rounded-xl p-3.5 flex items-center justify-between shadow-2xs">
+                        {selectedSpotId ? (
+                          <div className="flex items-center gap-2">
+                            <Tent className="w-4 h-4 text-blue-500" />
+                            <span className="text-xs font-extrabold text-slate-800">
+                              {spots.find((s) => s.id === selectedSpotId)?.name}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-slate-400 font-medium">캠핑 지도를 선택해 주세요</span>
+                        )}
+                        {selectedSpotId && (
+                          <span className="text-[10px] bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-lg font-mono font-extrabold border border-blue-100 shadow-2xs">
+                            {selectedSpotId.toUpperCase()}
+                          </span>
+                        )}
                       </div>
-                      <p className="text-slate-300 leading-relaxed text-[11px]">{aiDecision.explanation}</p>
                     </div>
-                  )}
 
-                  <div className="flex gap-2.5 mt-2">
-                    <button
-                      onClick={handleCancelBooking}
-                      className="flex-1 py-2.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold cursor-pointer text-center transition-colors"
+                    {/* Optional message to prompt-inject or talk to AI agent */}
+                    <div>
+                      <label className="block text-xs font-extrabold text-slate-600 mb-1.5 flex items-center gap-1.5">
+                        에이전트에게 전할 한마디 (선택)
+                      </label>
+                      <textarea
+                        placeholder="원하는 자리 예약과 관련된 특별한 사유나 질문이 있다면 작성하세요. (인공지능이 예약 여부를 결정하는 데 활용됩니다.)"
+                        value={customPrompt}
+                        onChange={(e) => setCustomPrompt(e.target.value)}
+                        rows={3}
+                        className="w-full text-xs px-3.5 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/8 transition-all resize-none bg-white shadow-2xs"
+                      />
+                    </div>
+
+                    <AnimatePresence>
+                      {aiDecision && (aiDecision.isViolation || aiDecision.action === "reject" || aiDecision.action === "waitlist_suggest") && (
+                        <motion.div
+                          key="violation-decision-box"
+                          initial={{ opacity: 0, y: -12, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -12, scale: 0.98 }}
+                          transition={{ duration: 0.25, ease: "easeOut" }}
+                          className={`p-4 rounded-xl border flex flex-col gap-3 ${
+                            aiDecision.isViolation || aiDecision.action === "reject"
+                              ? "bg-rose-50/60 border-rose-200/60 text-rose-950"
+                              : "bg-amber-50/40 border-amber-200/60 text-amber-950"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 font-extrabold text-xs">
+                            {aiDecision.isViolation || aiDecision.action === "reject" ? (
+                              <>
+                                <ShieldAlert className="w-4 h-4 text-rose-500 shrink-0" />
+                                <span>심사 부적격 판정 (예약 취소/거부됨)</span>
+                              </>
+                            ) : (
+                              <>
+                                <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+                                <span>캠핑장 매진 안내 (대기 등록 권장)</span>
+                              </>
+                            )}
+                          </div>
+
+                          {aiDecision.ruleName && aiDecision.ruleName !== "해당 없음" && (
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 bg-white border border-slate-150 px-2.5 py-0.5 rounded-md self-start shadow-2xs">
+                              <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-pulse"></span>
+                              적용 규칙: {aiDecision.ruleName}
+                            </div>
+                          )}
+
+                          <p className="text-slate-600 leading-relaxed text-[11px] font-semibold bg-white p-3 rounded-lg border border-slate-100 shadow-2xs">
+                            {aiDecision.explanation}
+                          </p>
+
+                          {aiDecision.action === "waitlist_suggest" && (
+                            <motion.button
+                              type="button"
+                              onClick={handleRegisterWaitlist}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className="w-full py-2.5 px-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold cursor-pointer text-center flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                            >
+                              <Clock className="w-3.5 h-3.5" />
+                              대기자 명단에 지금 등록하기
+                            </motion.button>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <motion.button
+                      type="submit"
+                      disabled={isEvaluating || !selectedSpotId}
+                      whileHover={selectedSpotId && !isEvaluating ? { scale: 1.015 } : {}}
+                      whileTap={selectedSpotId && !isEvaluating ? { scale: 0.985 } : {}}
+                      className={`w-full py-3.5 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                        isEvaluating
+                          ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+                          : !selectedSpotId
+                          ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                          : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-100"
+                      }`}
                     >
-                      취소
-                    </button>
-                    <button
-                      onClick={handleConfirmReservation}
-                      className="flex-2 py-2.5 rounded-lg bg-[#3B82F6] hover:bg-blue-600 text-white text-xs font-bold cursor-pointer text-center flex items-center justify-center gap-1.5 shadow-sm shadow-blue-100 transition-colors"
-                    >
-                      <CheckCircle2 className="w-4 h-4" />
-                      최종 예약 확정하기
-                    </button>
-                  </div>
-                </div>
-              )}
+                      {isEvaluating ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          인공지능 규칙 심사 중...
+                        </>
+                      ) : (
+                        <>
+                          <Shield className="w-4 h-4" />
+                          예약 적합성 AI 심사받기
+                        </>
+                      )}
+                    </motion.button>
+                  </motion.form>
+                ) : (
+                  /* Before Confirmation step: 반드시 사용자가 최종 확인 버튼을 눌러야 함 */
+                  <motion.div
+                    key="confirmation-step"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    className="bg-blue-50/40 border border-blue-100 rounded-2xl p-5 flex flex-col gap-4.5"
+                  >
+                    <div className="flex items-center gap-2 text-blue-850 border-b border-blue-100 pb-2.5">
+                      <Sparkles className="w-4.5 h-4.5 text-blue-500 animate-pulse" />
+                      <h4 className="font-extrabold text-xs text-blue-600">최종 예약 확정 전 마지막 확인</h4>
+                    </div>
+
+                    <div className="text-xs space-y-2.5 text-slate-700">
+                      <div className="flex justify-between border-b border-dashed border-slate-200/50 pb-2">
+                        <span className="text-slate-400 font-medium">예약 대상 자리</span>
+                        <span className="font-extrabold text-slate-800">
+                          {spots.find((s) => s.id === selectedSpotId)?.name} ({selectedSpotId?.toUpperCase()})
+                        </span>
+                      </div>
+                      <div className="flex justify-between border-b border-dashed border-slate-200/50 pb-2">
+                        <span className="text-slate-400 font-medium">신청 모둠 / 팀</span>
+                        <span className="font-extrabold text-slate-800">{teamNumber}</span>
+                      </div>
+                      <div className="flex justify-between border-b border-dashed border-slate-200/50 pb-2">
+                        <span className="text-slate-400 font-medium">사용자 별명</span>
+                        <span className="font-extrabold text-slate-800">{nickname} 님</span>
+                      </div>
+                    </div>
+
+                    <AnimatePresence>
+                      {aiDecision && (
+                        <motion.div
+                          key="approval-decision-box"
+                          initial={{ opacity: 0, scale: 0.95, y: 8 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                          transition={{ duration: 0.25, ease: "easeOut" }}
+                          className="bg-slate-900 text-slate-50 p-4 rounded-xl font-mono text-xs relative min-h-[80px] shadow-sm border border-slate-800"
+                        >
+                          <div className="text-emerald-400 font-bold mb-2 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            AI 분석 결과: [예약 가능 적합]
+                          </div>
+                          <p className="text-slate-300 leading-relaxed text-[11px] font-sans font-medium">{aiDecision.explanation}</p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <div className="flex gap-2.5 mt-2">
+                      <motion.button
+                        onClick={handleCancelBooking}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="flex-1 py-3 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold cursor-pointer text-center transition-all"
+                      >
+                        취소
+                      </motion.button>
+                      <motion.button
+                        onClick={handleConfirmReservation}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="flex-2 py-3 rounded-xl bg-blue-600 hover:bg-blue-750 text-white text-xs font-bold cursor-pointer text-center flex items-center justify-center gap-1.5 shadow-sm shadow-blue-100 transition-all"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        최종 예약 확정하기
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         )}
@@ -967,19 +1074,19 @@ export default function App() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             {/* Left/Center: Attack Sandbox */}
             <div className="lg:col-span-2 flex flex-col gap-6">
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
-                <div className="flex items-start justify-between border-b border-slate-100 pb-3 mb-4">
+              <div className="bg-white border border-slate-200/60 rounded-2xl p-6 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-5">
                   <div>
-                    <h2 className="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                    <h2 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
                       🕵️‍♂️ 인공지능 보안 실험실 (레드팀 공격)
                     </h2>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                       인공지능의 취약점을 공략하는 공격 질문을 던져보고, AI 예약 에이전트가 어떤 방어 규칙으로 방패를 들었는지 분석해 보세요.
                     </p>
                   </div>
                   <button
                     onClick={() => setActiveGlossary("redteam")}
-                    className="text-[#3B82F6] hover:text-blue-700 text-xs font-bold flex items-center gap-1.5 shrink-0 bg-blue-50/50 border border-blue-100 px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
+                    className="text-blue-600 hover:text-blue-700 text-xs font-bold flex items-center gap-1.5 shrink-0 bg-blue-50/50 border border-blue-100/50 px-3 py-1.5 rounded-xl cursor-pointer transition-all shadow-2xs"
                   >
                     <HelpCircle className="w-3.5 h-3.5" />
                     레드팀이란?
@@ -988,7 +1095,7 @@ export default function App() {
 
                 {/* Predefined Attack Presets */}
                 <div className="mb-6">
-                  <h3 className="text-xs font-bold text-slate-700 mb-3 flex items-center gap-1">
+                  <h3 className="text-xs font-extrabold text-slate-600 mb-3.5 flex items-center gap-1.5">
                     🎯 예시 공격 문장 선택 (클릭하여 주입)
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -998,13 +1105,13 @@ export default function App() {
                         onClick={() => {
                           setRedteamPrompt(attack.prompt);
                         }}
-                        className="bg-slate-50 hover:bg-rose-50/50 hover:border-rose-250 border border-slate-200/85 rounded-xl p-3 text-left transition-all text-xs flex flex-col gap-1.5 cursor-pointer hover:shadow-xs group"
+                        className="bg-slate-50/40 hover:bg-rose-50/30 hover:border-rose-200/60 border border-slate-200/50 rounded-xl p-3.5 text-left transition-all text-xs flex flex-col gap-1.5 cursor-pointer hover:shadow-2xs group"
                       >
                         <div className="flex items-center justify-between w-full">
-                          <span className="font-bold text-slate-700 group-hover:text-rose-700 transition-colors">
+                          <span className="font-extrabold text-slate-700 group-hover:text-rose-700 transition-colors">
                             {attack.title}
                           </span>
-                          <span className="text-[9px] bg-slate-200 group-hover:bg-rose-100 text-slate-500 group-hover:text-rose-800 px-1.5 py-0.5 rounded font-bold transition-colors">
+                          <span className="text-[9px] bg-slate-200/60 group-hover:bg-rose-100 group-hover:text-rose-800 text-slate-500 font-extrabold px-1.5 py-0.5 rounded-md transition-all font-mono">
                             {attack.defenseRuleName.split(" ")[0]}
                           </span>
                         </div>
@@ -1020,9 +1127,9 @@ export default function App() {
                 </div>
 
                 {/* Chat Playground Area */}
-                <div className="border border-slate-700 rounded-2xl bg-[#0F172A] flex flex-col min-h-[380px] overflow-hidden shadow-md">
+                <div className="border border-slate-800/80 rounded-2xl bg-[#080C14] flex flex-col min-h-[380px] overflow-hidden shadow-md">
                   {/* Playground Header */}
-                  <div className="bg-[#1E293B] border-b border-slate-800 px-4 py-3 flex items-center justify-between text-xs">
+                  <div className="bg-[#0E1524] border-b border-slate-800/80 px-4 py-3 flex items-center justify-between text-xs">
                     <span className="font-mono font-bold text-slate-300 flex items-center gap-1.5">
                       <Flame className="w-4 h-4 text-rose-500 animate-pulse" />
                       SECURITY CONSOLE v1.1
@@ -1036,12 +1143,12 @@ export default function App() {
                   </div>
 
                   {/* Chat logs */}
-                  <div className="flex-1 p-4 flex flex-col gap-4 overflow-y-auto max-h-[350px] bg-[#0F172A]">
+                  <div className="flex-1 p-4 flex flex-col gap-4 overflow-y-auto max-h-[350px] bg-[#080C14]">
                     {chatHistory.length === 0 ? (
                       <div className="flex flex-col items-center justify-center text-center text-slate-500 h-full py-16 gap-3">
-                        <Shield className="w-10 h-10 text-slate-700" />
+                        <Shield className="w-10 h-10 text-slate-800/60" />
                         <div className="max-w-md px-4">
-                          <p className="text-xs font-bold text-slate-400">공격 콘솔이 활성화되어 있습니다</p>
+                          <p className="text-xs font-extrabold text-slate-400">공격 콘솔이 활성화되어 있습니다</p>
                           <p className="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
                             위의 추천 공격 문장을 클릭하여 주입하거나 밑에 직접 자유롭게 해킹 프롬프트를 넣거나 인공지능 윤리에 관한 질문을 작성해 보세요.
                           </p>
@@ -1059,10 +1166,10 @@ export default function App() {
                             {item.sender === "user" ? "💻 RED TEAM (ATTACKER)" : "🛡️ SECURITY AI (DEFENDER)"}
                           </span>
                           <div
-                            className={`rounded-xl p-3.5 text-xs ${
+                            className={`rounded-2xl p-3.5 text-xs ${
                               item.sender === "user"
-                                ? "bg-[#1E293B] border border-slate-700 text-[#F8FAFC] rounded-tr-none font-mono"
-                                : "bg-[#1E293B]/40 border border-slate-850 text-slate-200 rounded-tl-none shadow-xs"
+                                ? "bg-[#121A2E] border border-slate-800 text-[#F8FAFC] rounded-tr-none font-mono"
+                                : "bg-[#0F1626] border border-slate-850/80 text-slate-100 rounded-tl-none shadow-xs"
                             }`}
                           >
                             {item.text}
@@ -1072,11 +1179,11 @@ export default function App() {
                               <div className="mt-3 pt-2.5 border-t border-slate-800 flex flex-col gap-1.5">
                                 <div className="flex items-center gap-1.5">
                                   {item.decision.isViolation ? (
-                                    <span className="bg-rose-500/15 border border-rose-500/30 text-rose-400 font-bold px-2 py-0.5 rounded flex items-center gap-1 text-[9px] font-mono">
+                                    <span className="bg-rose-500/10 border border-rose-500/30 text-rose-400 font-bold px-2 py-0.5 rounded-md flex items-center gap-1 text-[9px] font-mono">
                                       <ShieldAlert className="w-3 h-3" /> 차단 성공
                                     </span>
                                   ) : (
-                                    <span className="bg-[#10B981]/15 border border-[#10B981]/30 text-[#10B981] font-bold px-2 py-0.5 rounded flex items-center gap-1 text-[9px] font-mono">
+                                    <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold px-2 py-0.5 rounded-md flex items-center gap-1 text-[9px] font-mono">
                                       <ShieldCheck className="w-3 h-3" /> 안전 승인
                                     </span>
                                   )}
@@ -1093,7 +1200,7 @@ export default function App() {
                     {redteamLoading && (
                       <div className="self-start flex flex-col items-start max-w-[85%]">
                         <span className="text-[10px] text-slate-500 font-mono mb-1">🛡️ SECURITY AI (DEFENDER)</span>
-                        <div className="bg-[#1E293B]/40 border border-slate-850 text-slate-400 rounded-xl rounded-tl-none p-3.5 text-xs flex items-center gap-2.5 shadow-sm">
+                        <div className="bg-[#0F1626] border border-slate-850 text-slate-400 rounded-2xl rounded-tl-none p-3.5 text-xs flex items-center gap-2.5 shadow-sm">
                           <RefreshCw className="w-4 h-4 animate-spin text-rose-500" />
                           <span className="font-mono">인공지능 보안 심사단 방어 분석 중...</span>
                         </div>
@@ -1102,7 +1209,7 @@ export default function App() {
                   </div>
 
                   {/* Input form */}
-                  <div className="p-3 bg-[#1E293B] border-t border-slate-800 flex items-center gap-2">
+                  <div className="p-3 bg-[#0E1524] border-t border-slate-800/80 flex items-center gap-2">
                     <input
                       type="text"
                       placeholder="공격 문장을 입력하거나 AI 윤리에 대해 질문하세요..."
@@ -1112,14 +1219,14 @@ export default function App() {
                         if (e.key === "Enter") handleSendRedTeamAttack(redteamPrompt);
                       }}
                       disabled={redteamLoading}
-                      className="flex-1 text-xs px-3.5 py-2.5 bg-[#0F172A] border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all font-mono"
+                      className="flex-1 text-xs px-3.5 py-2.5 bg-[#080C14] border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-rose-500/80 focus:ring-4 focus:ring-rose-500/10 transition-all font-mono"
                     />
                     <button
                       onClick={() => handleSendRedTeamAttack(redteamPrompt)}
                       disabled={redteamLoading || !redteamPrompt.trim()}
-                      className={`p-2.5 rounded-lg text-white font-bold transition-all shrink-0 cursor-pointer ${
+                      className={`p-2.5 rounded-xl text-white font-bold transition-all shrink-0 cursor-pointer ${
                         redteamPrompt.trim() && !redteamLoading
-                          ? "bg-rose-600 hover:bg-rose-500 active:bg-rose-700 shadow-sm shadow-rose-900/25"
+                          ? "bg-rose-600 hover:bg-rose-500 active:bg-rose-700 shadow-sm"
                           : "bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700"
                       }`}
                     >
@@ -1133,10 +1240,10 @@ export default function App() {
             {/* Right: Security Rules Guide and explanation of terms */}
             <div className="flex flex-col gap-6">
               {/* Defense Shield Card */}
-              <div className="bg-[#1E293B] text-white rounded-2xl p-6 border-t-4 border-rose-500 border-x border-b border-slate-800 shadow-md flex flex-col gap-4 relative overflow-hidden">
+              <div className="bg-slate-900 text-white rounded-2xl p-6 border border-slate-800 shadow-md flex flex-col gap-4 relative overflow-hidden">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-5 h-5 text-rose-500 animate-bounce" />
-                  <span className="text-[10px] font-extrabold uppercase bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2.5 py-0.5 rounded-full">
+                  <span className="text-[10px] font-extrabold uppercase bg-rose-500/10 text-rose-400 border border-rose-500/25 px-2.5 py-0.5 rounded-full">
                     보안 방화벽 가동 중
                   </span>
                 </div>
@@ -1146,36 +1253,36 @@ export default function App() {
                     AI 에이전트는 규칙 지시사항(System Prompt)을 바탕으로 아래의 5가지 윤리 방어를 고수합니다.
                   </p>
                 </div>
-                <ul className="text-xs text-slate-300 space-y-2 font-medium mt-1">
+                <ul className="text-xs text-slate-300 space-y-2.5 font-medium mt-1">
                   <li className="flex items-start gap-1.5 font-mono">
-                    <span className="text-rose-400">1.</span> 개인정보 차단 필터
+                    <span className="text-rose-400 font-extrabold">1.</span> 개인정보 차단 필터
                   </li>
                   <li className="flex items-start gap-1.5 font-mono">
-                    <span className="text-rose-400">2.</span> 1팀 1자리 정량 공급
+                    <span className="text-rose-400 font-extrabold">2.</span> 1팀 1자리 정량 공급
                   </li>
                   <li className="flex items-start gap-1.5 font-mono">
-                    <span className="text-rose-400">3.</span> 명당 독점 매수 차단
+                    <span className="text-rose-400 font-extrabold">3.</span> 명당 독점 매수 차단
                   </li>
                   <li className="flex items-start gap-1.5 font-mono">
-                    <span className="text-rose-400">4.</span> 잔여석 정보 무결성 검증
+                    <span className="text-rose-400 font-extrabold">4.</span> 잔여석 정보 무결성 검증
                   </li>
                   <li className="flex items-start gap-1.5 font-mono">
-                    <span className="text-rose-400">5.</span> 규칙 파괴(인젝션) 우회 무효화
+                    <span className="text-rose-400 font-extrabold">5.</span> 규칙 파괴(인젝션) 우회 무효화
                   </li>
                 </ul>
               </div>
 
               {/* Terminology Explanation Board (어려운 용어 쉬운 설명) */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
-                <h3 className="text-xs font-bold text-slate-800 mb-4 flex items-center gap-1.5">
-                  <Info className="w-4 h-4 text-[#3B82F6]" />
+              <div className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm">
+                <h3 className="text-xs font-extrabold text-slate-800 mb-4 flex items-center gap-1.5 border-b border-slate-100 pb-2.5">
+                  <Info className="w-4 h-4 text-blue-500" />
                   어려운 보안 용어 쉬운 정리
                 </h3>
                 <div className="space-y-4">
                   <div>
                     <button
                       onClick={() => setActiveGlossary("prompt_injection")}
-                      className="font-bold text-xs text-slate-700 hover:text-[#3B82F6] hover:underline flex items-center gap-1 cursor-pointer transition-all"
+                      className="font-extrabold text-xs text-slate-700 hover:text-blue-600 hover:underline flex items-center gap-1 cursor-pointer transition-all"
                     >
                       프롬프트 인젝션 (Prompt Injection)
                     </button>
@@ -1186,7 +1293,7 @@ export default function App() {
                   <div>
                     <button
                       onClick={() => setActiveGlossary("pii")}
-                      className="font-bold text-xs text-slate-700 hover:text-[#3B82F6] hover:underline flex items-center gap-1 cursor-pointer transition-all"
+                      className="font-extrabold text-xs text-slate-700 hover:text-blue-600 hover:underline flex items-center gap-1 cursor-pointer transition-all"
                     >
                       개인 식별 정보 (Personal Information)
                     </button>
@@ -1197,7 +1304,7 @@ export default function App() {
                   <div>
                     <button
                       onClick={() => setActiveGlossary("data_integrity")}
-                      className="font-bold text-xs text-slate-700 hover:text-[#3B82F6] hover:underline flex items-center gap-1 cursor-pointer transition-all"
+                      className="font-extrabold text-xs text-slate-700 hover:text-blue-600 hover:underline flex items-center gap-1 cursor-pointer transition-all"
                     >
                       데이터 무결성 (Data Integrity)
                     </button>
@@ -1215,27 +1322,27 @@ export default function App() {
         {activeTab === "presentation" && (
           <div className="max-w-4xl mx-auto w-full flex flex-col gap-6">
             <div className="text-center mb-2">
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+              <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">
                 📊 인공지능 캠핑 예약 시스템 발표회
               </h2>
-              <p className="text-xs text-slate-500 mt-1 font-medium">
+              <p className="text-xs text-slate-500 mt-1 font-semibold">
                 우리가 개발한 시스템의 문제 해결 과정과 인공지능 윤리 수립 결과를 발표 카드로 확인하세요.
               </p>
             </div>
 
             {/* Slider view of presentation cards */}
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden min-h-[420px] flex flex-col justify-between">
+            <div className="bg-white border border-slate-200/60 rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden min-h-[420px] flex flex-col justify-between">
               {/* Card Category Header Badge */}
               <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
                 <span
                   className={`text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider ${
                     PRESENTATION_CARDS[currentSlideIndex].category === "problem"
-                      ? "bg-rose-50 text-rose-800 border border-rose-200"
+                      ? "bg-rose-50 text-rose-800 border border-rose-200/60"
                       : PRESENTATION_CARDS[currentSlideIndex].category === "ethics"
-                      ? "bg-sky-50 text-sky-800 border border-sky-200"
+                      ? "bg-blue-50 text-blue-800 border border-blue-200/60"
                       : PRESENTATION_CARDS[currentSlideIndex].category === "test"
-                      ? "bg-amber-50 text-amber-800 border border-amber-200"
-                      : "bg-violet-50 text-violet-800 border border-violet-200"
+                      ? "bg-amber-50 text-amber-800 border border-amber-200/60"
+                      : "bg-violet-50 text-violet-800 border border-violet-200/60"
                   }`}
                 >
                   {PRESENTATION_CARDS[currentSlideIndex].category === "problem"
@@ -1254,27 +1361,27 @@ export default function App() {
 
               {/* Slide Content */}
               <div className="flex-1 flex flex-col gap-4 justify-center py-2">
-                <h3 className="text-lg font-bold text-slate-900 font-display">
+                <h3 className="text-lg font-extrabold text-slate-900 font-display">
                   {PRESENTATION_CARDS[currentSlideIndex].title}
                 </h3>
                 {PRESENTATION_CARDS[currentSlideIndex].subtitle && (
-                  <p className="text-xs font-semibold text-sky-600/90 -mt-2">
+                  <p className="text-xs font-bold text-blue-600/90 -mt-2">
                     {PRESENTATION_CARDS[currentSlideIndex].subtitle}
                   </p>
                 )}
 
                 {/* Bullets */}
-                <ul className="space-y-2 text-xs text-slate-700 mt-3 font-medium">
+                <ul className="space-y-2 text-xs text-slate-700 mt-3 font-semibold">
                   {PRESENTATION_CARDS[currentSlideIndex].points.map((pt, i) => (
                     <li key={i} className="flex items-start gap-2 leading-relaxed">
-                      <span className="text-sky-500 font-extrabold shrink-0 mt-0.5">•</span>
+                      <span className="text-blue-500 font-extrabold shrink-0 mt-0.5">•</span>
                       <span>{pt}</span>
                     </li>
                   ))}
                 </ul>
 
                 {/* Descriptive rationale */}
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 mt-4 text-xs text-slate-600 leading-relaxed italic">
+                <div className="bg-slate-50/60 border border-slate-100 rounded-2xl p-4 mt-4 text-xs text-slate-600 leading-relaxed italic">
                   &ldquo; {PRESENTATION_CARDS[currentSlideIndex].explanation} &rdquo;
                 </div>
               </div>
@@ -1287,7 +1394,7 @@ export default function App() {
                   className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
                     currentSlideIndex === 0
                       ? "text-slate-300 border-slate-100 cursor-not-allowed"
-                      : "text-slate-600 border-slate-200 hover:bg-slate-50 cursor-pointer"
+                      : "text-slate-600 border-slate-200 hover:bg-slate-50/80 cursor-pointer"
                   }`}
                 >
                   이전 슬라이드
@@ -1300,7 +1407,7 @@ export default function App() {
                       key={idx}
                       onClick={() => setCurrentSlideIndex(idx)}
                       className={`w-2 h-2 rounded-full transition-all ${
-                        idx === currentSlideIndex ? "bg-sky-600 w-4" : "bg-slate-200 hover:bg-slate-300"
+                        idx === currentSlideIndex ? "bg-blue-600 w-4" : "bg-slate-200 hover:bg-slate-300"
                       }`}
                     ></button>
                   ))}
@@ -1309,7 +1416,7 @@ export default function App() {
                 {currentSlideIndex < PRESENTATION_CARDS.length - 1 ? (
                   <button
                     onClick={() => setCurrentSlideIndex((prev) => Math.min(PRESENTATION_CARDS.length - 1, prev + 1))}
-                    className="px-4 py-2 rounded-xl text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    className="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
                   >
                     다음 슬라이드 <ArrowRight className="w-3.5 h-3.5" />
                   </button>
@@ -1326,31 +1433,31 @@ export default function App() {
 
             {/* Quick Summary Bento Blocks */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-3">
+              <div className="bg-white border border-slate-200/60 rounded-2xl p-5 flex flex-col gap-3 shadow-sm">
                 <div className="bg-rose-50 text-rose-700 p-2 rounded-xl w-fit">
                   <ShieldAlert className="w-5 h-5" />
                 </div>
-                <h4 className="font-bold text-xs text-slate-800">프롬프트 취약점 해소</h4>
+                <h4 className="font-extrabold text-xs text-slate-800">프롬프트 취약점 해소</h4>
                 <p className="text-[11px] text-slate-500 leading-relaxed">
                   인공지능의 취약점인 프롬프트 우회 명령을 사전에 차단함으로써, 데이터 위조나 특혜 예약을 원천 봉쇄하였습니다.
                 </p>
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-3">
-                <div className="bg-sky-50 text-sky-700 p-2 rounded-xl w-fit">
+              <div className="bg-white border border-slate-200/60 rounded-2xl p-5 flex flex-col gap-3 shadow-sm">
+                <div className="bg-blue-50 text-blue-700 p-2 rounded-xl w-fit">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
-                <h4 className="font-bold text-xs text-slate-800">실시간 데이터 무결성</h4>
+                <h4 className="font-extrabold text-xs text-slate-800">실시간 데이터 무결성</h4>
                 <p className="text-[11px] text-slate-500 leading-relaxed">
                   거짓 예약을 요구하는 사용자의 주입 공격을 거부하며, 올바르고 투명한 좌석 대기 정보를 100% 검증 유지합니다.
                 </p>
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-3">
+              <div className="bg-white border border-slate-200/60 rounded-2xl p-5 flex flex-col gap-3 shadow-sm">
                 <div className="bg-amber-50 text-amber-700 p-2 rounded-xl w-fit">
                   <Clock className="w-5 h-5" />
                 </div>
-                <h4 className="font-bold text-xs text-slate-800">대기자 구제 알고리즘</h4>
+                <h4 className="font-extrabold text-xs text-slate-800">대기자 구제 알고리즘</h4>
                 <p className="text-[11px] text-slate-500 leading-relaxed">
                   만석이 될 경우 실망하며 이탈하지 않고, 공평하게 자리가 날 경우 대기 순번대로 예약 권리를 승계받는 공정 메커니즘입니다.
                 </p>
