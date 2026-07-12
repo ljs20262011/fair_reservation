@@ -1,0 +1,6 @@
+{
+  "name": "공정한 캠핑장 자리 예약",
+  "description": "인공지능과 함께 공정하게 캠핑장 자리를 예약하고, 레드팀 테스트를 통해 인공지능 윤리 및 보안을 학습하는 교육용 서비스입니다.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
